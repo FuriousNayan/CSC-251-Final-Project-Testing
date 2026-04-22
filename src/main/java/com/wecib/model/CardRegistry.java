@@ -28,13 +28,13 @@ public class CardRegistry {
 
         ALL_CARDS.add(new Card.Builder("GC", CardType.AURA, 140)
                 .attack(new Attack("Nationals Bash Bag", 45, 1, CardType.AURA))
-                .attack(new Attack("Green Eyed Domain", 100, 3, CardType.AURA))
+                .attack(new Attack("Green Eyed Gaze", 100, 3, CardType.AURA))
                 .image("/com/wecib/images/gabe.png")
                 .build());
 
         ALL_CARDS.add(new Card.Builder("Jacky Chan", CardType.LIGHT, 85)
                 .attack(new Attack("Credit Card Slash", 30, 1, CardType.LIGHT))
-                .attack(new Attack("Beach House Domain Expansion", 75, 2, CardType.LIGHT))
+                .attack(new Attack("Beach House", 75, 2, CardType.LIGHT))
                 .image("/com/wecib/images/jack.png")
                 .build());
 
@@ -43,13 +43,13 @@ public class CardRegistry {
                 .attack(new Attack("Triple Flip Reset", 70, 2, CardType.FIRE))
                 .build());
 
-        ALL_CARDS.add(new Card.Builder("Karim of the Crop", CardType.DIRT, 110)
+        ALL_CARDS.add(new Card.Builder("Karim the Crop", CardType.DIRT, 110)
                 .attack(new Attack("Light Chuckle", 25, 1, CardType.DIRT))
                 .attack(new Attack("GMC at 80mph", 75, 3, CardType.DIRT))
                 .image("/com/wecib/images/karim.png")
                 .build());
 
-        ALL_CARDS.add(new Card.Builder("Marcus: Master of Unicycle", CardType.WATER, 80)
+        ALL_CARDS.add(new Card.Builder("Master of Unicycle", CardType.WATER, 80)
                 .attack(new Attack("The Ride", 15, 1, CardType.WATER))
                 .attack(new Attack("Unicycle Rampage", 50, 2, CardType.WATER))
                 .image("/com/wecib/images/Marcus Master of Unicycle.png")
@@ -66,7 +66,7 @@ public class CardRegistry {
                 .attack(new Attack("Brick by Brick", 70, 2, CardType.DIRT))
                 .build());
         
-        ALL_CARDS.add(new Card.Builder("Max Wellington", CardType.FIRE, 100)
+        ALL_CARDS.add(new Card.Builder("Maxwell", CardType.FIRE, 100)
                 .attack(new Attack("Words of Curse", 40, 1, CardType.FIRE))
                 .attack(new Attack("F-BOMB", 70, 2, CardType.FIRE))
                 .image("/com/wecib/images/maxwell.png")

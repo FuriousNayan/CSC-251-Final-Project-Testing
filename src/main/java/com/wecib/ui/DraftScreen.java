@@ -35,12 +35,17 @@ public class DraftScreen extends VBox {
         this.onDraftComplete = onDraftComplete;
 
         setAlignment(Pos.TOP_CENTER);
-        setSpacing(14);
-        setPadding(new Insets(30, 40, 20, 40));
+        setSpacing(8); // smaller vertical spacing
+        setPadding(new Insets(16, 18, 12, 18)); // smaller paddings
         getStyleClass().add("draft-screen");
 
         Label header = new Label("DRAFT YOUR DECK");
         header.getStyleClass().add("screen-header");
+        header.setWrapText(true);
+        header.setMaxWidth(Double.MAX_VALUE);
+        header.setAlignment(Pos.CENTER);
+        // Bind max width to this VBox width so it never overflows
+        header.maxWidthProperty().bind(widthProperty().subtract(getPadding() != null ? (getPadding().getLeft() + getPadding().getRight()) : 36));
 
         roundLabel = new Label();
         roundLabel.getStyleClass().add("round-label");
@@ -48,9 +53,9 @@ public class DraftScreen extends VBox {
         Label instruction = new Label("Choose a card to add to your deck");
         instruction.getStyleClass().add("instruction-text");
 
-        choicesBox = new HBox(30);
+        choicesBox = new HBox(18); // smaller horizontal spacing
         choicesBox.setAlignment(Pos.CENTER);
-        choicesBox.setPadding(new Insets(15, 0, 15, 0));
+        choicesBox.setPadding(new Insets(8, 0, 8, 0));
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
@@ -63,13 +68,54 @@ public class DraftScreen extends VBox {
         counterLabel.getStyleClass().add("deck-counter");
         deckHeader.getChildren().addAll(deckLabel, counterLabel);
 
-        deckPreviewRow = new HBox(12);
+        deckPreviewRow = new HBox(7); // smaller spacing for deck preview
         deckPreviewRow.setAlignment(Pos.CENTER);
-        deckPreviewRow.setPadding(new Insets(8, 0, 8, 0));
+        deckPreviewRow.setPadding(new Insets(4, 0, 4, 0));
 
         getChildren().addAll(header, roundLabel, instruction, choicesBox, spacer, deckHeader, deckPreviewRow);
 
+        // Responsive scaling: listen to scene width and update card sizes
+        sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.widthProperty().addListener((o, oldW, newW) -> updateCardSizes(newW.doubleValue()));
+                updateCardSizes(newScene.getWidth());
+            }
+        });
         showNextRound();
+
+    }
+
+    // Dynamically update card sizes based on scene width
+    private void updateCardSizes(double sceneWidth) {
+        // Calculate available width for choices row (subtract paddings)
+        double leftPad = getPadding() != null ? getPadding().getLeft() : 40;
+        double rightPad = getPadding() != null ? getPadding().getRight() : 40;
+        double availableWidth = sceneWidth - leftPad - rightPad;
+        int numCards = choicesBox.getChildren().size();
+        if (numCards == 0) return;
+        double spacing = choicesBox.getSpacing();
+        // Card base width (should match CardView BASE_DIMENSIONS for LARGE)
+        double cardBaseWidth = 250.0;
+        // Calculate max scale so all cards + spacing fit in available width
+        double maxScale = (availableWidth - (numCards - 1) * spacing) / (numCards * cardBaseWidth);
+        // Clamp scale between 0.35 and 0.85 for compactness
+        double scale = Math.max(0.35, Math.min(0.85, maxScale));
+        for (int i = 0; i < numCards; i++) {
+            VBox cardSlot = (VBox) choicesBox.getChildren().get(i);
+            StackPane flipContainer = (StackPane) cardSlot.getChildren().get(0);
+            for (javafx.scene.Node node : flipContainer.getChildren()) {
+                if (node instanceof Region && node.getStyleClass().contains("card-back")) {
+                    ((Region) node).setPrefSize(cardBaseWidth * scale, 370 * scale);
+                    ((Region) node).setMinSize(cardBaseWidth * scale, 370 * scale);
+                    ((Region) node).setMaxSize(cardBaseWidth * scale, 370 * scale);
+                } else if (node instanceof CardView) {
+                    ((CardView) node).setScaledSize(scale);
+                }
+            }
+            flipContainer.setPrefSize(cardBaseWidth * scale, 370 * scale);
+            flipContainer.setMaxSize(cardBaseWidth * scale, 370 * scale);
+        }
+    }
     }
 
     private void showNextRound() {

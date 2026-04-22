@@ -25,11 +25,12 @@ public class CardView extends VBox {
 
     public enum Size { LARGE, MEDIUM, SMALL }
 
-    private static final double[][] DIMENSIONS = {
+    private static final double[][] BASE_DIMENSIONS = {
         {250, 370},
         {195, 285},
         {130, 170},
     };
+    private double scale = 1.0;
 
     private final Size size;
     private final Label nameLabel;
@@ -53,9 +54,8 @@ public class CardView extends VBox {
 
     public CardView(Card card, Size size) {
         this.size = size;
-        double w = DIMENSIONS[size.ordinal()][0];
-        double h = DIMENSIONS[size.ordinal()][1];
-
+        double w = BASE_DIMENSIONS[size.ordinal()][0];
+        double h = BASE_DIMENSIONS[size.ordinal()][1];
         setPrefSize(w, h);
         setMinSize(w, h);
         setMaxSize(w, h);
@@ -118,6 +118,36 @@ public class CardView extends VBox {
         hpBar.getStyleClass().add("card-hp-bar");
         hpBar.setPrefHeight(small ? 5 : 7);
         hpBar.setMaxHeight(small ? 5 : 7);
+
+    }
+
+    // Method to scale the card view dynamically
+    public void setScaledSize(double scale) {
+        this.scale = scale;
+        double[] base = BASE_DIMENSIONS[size.ordinal()];
+        double w = base[0] * scale;
+        double h = base[1] * scale;
+        setPrefSize(w, h);
+        setMinSize(w, h);
+        setMaxSize(w, h);
+        // Update image size
+        double pad = (size == Size.SMALL ? 5 : (size == Size.LARGE ? 8 : 7)) * scale;
+        double imgHeight = (size == Size.SMALL ? 70 : (size == Size.MEDIUM ? 120 : 155)) * scale;
+        double imgWidth = w - (pad * 2) - 14 * scale;
+        imageView.setFitWidth(imgWidth);
+        imageView.setFitHeight(imgHeight);
+        imageContainer.setPrefHeight(imgHeight);
+        imageContainer.setMinHeight(imgHeight);
+        imageContainer.setMaxHeight(imgHeight);
+        // Update header bar and type dot
+        headerBar.setPadding(new Insets((size == Size.SMALL ? 5 : (size == Size.LARGE ? 8 : 7)) * scale, pad + 3 * scale, (size == Size.SMALL ? 5 : (size == Size.LARGE ? 8 : 7)) * scale, pad + 3 * scale));
+        typeDot.setRadius((size == Size.SMALL ? 5 : (size == Size.LARGE ? 8 : 7)) * scale);
+        // Update hp bar
+        hpBar.setPrefHeight((size == Size.SMALL ? 5 : 7) * scale);
+        hpBar.setMaxHeight((size == Size.SMALL ? 5 : 7) * scale);
+        // Update font sizes if needed (optional)
+        // ...
+    }
 
         typeLabel = new Label();
         typeLabel.getStyleClass().add("card-type-badge");
